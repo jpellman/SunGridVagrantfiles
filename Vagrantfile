@@ -3,7 +3,7 @@
 # Based off instructions found here:
 # https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslSge
 # Additional Requirements:
-# https://github.com/cogitatio/vagrant-hostsupdater
+# https://github.com/devopsgroup-io/vagrant-hostmanager
 
 $masterprov = <<SCRIPT
 useradd --home /opt/sge --system sgeadmin
@@ -61,6 +61,12 @@ Vagrant.configure("2") do |config|
     mem = `wmic computersystem Get TotalPhysicalMemory`.split[1].to_i / 1024
   end
 
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = false
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = true
+  config.hostmanager.include_offline = true
+
   # Define the master node.
   config.vm.define "master" do |master|
     # Set memory and CPU allocation.
@@ -71,11 +77,9 @@ Vagrant.configure("2") do |config|
     # Shared directory for data processing/storage.
     master.vm.synced_folder ".", "/data", type: "nfs"
     # Add IP Address for private LAN.
-    master.vm.network "private_network", ip: "192.168.1.2"
+    master.vm.network "private_network", ip: "192.168.2.2"
     # Define hostname.
     master.vm.hostname = "master"
-    # Add nodes to /etc/hosts
-    master.hostsupdater.aliases = ['nodeA','nodeB']
     # Provision the master node.
     master.vm.provision "shell", inline:$masterprov
   end
@@ -87,9 +91,8 @@ Vagrant.configure("2") do |config|
       v.cpus = 1
     end
     nodeA.vm.synced_folder ".", "/data", type: "nfs"
-    nodeA.vm.network "private_network", ip: "192.168.1.3"
+    nodeA.vm.network "private_network", ip: "192.168.2.3"
     nodeA.vm.hostname = "nodeA"
-    nodeA.hostsupdater.aliases = ['nodeA']
     nodeA.vm.provision "shell", inline:$nodeprov
   end
   config.vm.define "nodeB" do |nodeB|
@@ -98,9 +101,8 @@ Vagrant.configure("2") do |config|
       v.cpus = 1
     end
     nodeB.vm.synced_folder ".", "/data", type: "nfs"
-    nodeB.vm.network "private_network", ip: "192.168.1.4"
+    nodeB.vm.network "private_network", ip: "192.168.2.4"
     nodeB.vm.hostname = "nodeB"
-    nodeB.hostsupdater.aliases = ['nodeB']
     nodeB.vm.provision "shell", inline:$nodeprov
   end
 end
