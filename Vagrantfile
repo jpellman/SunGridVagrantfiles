@@ -64,7 +64,7 @@ Vagrant.configure("2") do |config|
   config.hostmanager.enabled = true
   config.hostmanager.manage_host = false
   config.hostmanager.manage_guest = true
-  config.hostmanager.ignore_private_ip = true
+  config.hostmanager.ignore_private_ip = false
   config.hostmanager.include_offline = true
 
   # Define the master node.
