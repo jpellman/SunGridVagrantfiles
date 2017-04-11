@@ -45,6 +45,10 @@ SCRIPT
 Vagrant.configure("2") do |config|
   config.vm.box = "centos/6"
 
+  # Set number of cores for master and nodes
+  mastercores = 2
+  nodecores = 1
+
   # Get host memory.
   # From: https://stefanwrobel.com/how-to-make-vagrant-performance-not-suck
   host = RbConfig::CONFIG['host_os']
@@ -72,7 +76,7 @@ Vagrant.configure("2") do |config|
     # Set memory and CPU allocation.
     master.vm.provider "virtualbox" do |v|
       v.memory = mem / 1024/ 4
-      v.cpus = 1
+      v.cpus = mastercores
     end
     # Shared directory for data processing/storage.
     master.vm.synced_folder ".", "/data", type: "nfs"
@@ -88,7 +92,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "nodeA" do |nodeA|
     nodeA.vm.provider "virtualbox" do |v|
       v.memory = mem / 1024/ 8
-      v.cpus = 1
+      v.cpus = nodecores
     end
     nodeA.vm.synced_folder ".", "/data", type: "nfs"
     nodeA.vm.network "private_network", ip: "192.168.2.3"
@@ -98,7 +102,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "nodeB" do |nodeB|
     nodeB.vm.provider "virtualbox" do |v|
       v.memory = mem / 1024/ 8
-      v.cpus = 1
+      v.cpus = nodecores
     end
     nodeB.vm.synced_folder ".", "/data", type: "nfs"
     nodeB.vm.network "private_network", ip: "192.168.2.4"
