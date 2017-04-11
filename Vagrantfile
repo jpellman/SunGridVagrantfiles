@@ -11,11 +11,11 @@ baseurl=http://arc.liv.ac.uk/downloads/SGE/releases/
 version=8.1.6
 subversion=1
 for i in - -qmaster- -qmon- -execd-; do
-yum install ${baseurl}${version}/gridengine${i}${version}-${subversion}.el6.x86_64.rpm
+yum install -y ${baseurl}${version}/gridengine${i}${version}-${subversion}.el6.x86_64.rpm
 done
 export SGE_ROOT=/opt/sge
 cd $SGE_ROOT
-./install_qmaster
+./install_qmaster -auto /data/conf/inst_master.conf
 cat <<EOT >> /root/.bashrc 
 export SGE_ROOT=/usr/sge
 export SGE_CELL=default
@@ -35,11 +35,11 @@ baseurl=http://arc.liv.ac.uk/downloads/SGE/releases/
 version=8.1.6
 subversion=1
 for i in - -execd-; do
-yum install ${baseurl}${version}/gridengine${i}${version}-${subversion}.el6.x86_64.rpm
+yum install -y ${baseurl}${version}/gridengine${i}${version}-${subversion}.el6.x86_64.rpm
 done
 export SGE_ROOT=/opt/sge
 cd $SGE_ROOT
-./install_execd
+./install_execd -auto /data/conf/inst_node.conf
 SCRIPT
 
 Vagrant.configure("2") do |config|
