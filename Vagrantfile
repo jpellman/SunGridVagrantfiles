@@ -15,9 +15,9 @@ yum install -y ${baseurl}${version}/gridengine${i}${version}-${subversion}.el6.x
 done
 export SGE_ROOT=/opt/sge
 cd $SGE_ROOT
-./install_qmaster -auto /data/conf/inst_master.conf
-cat <<EOT >> /root/.bashrc 
-export SGE_ROOT=/usr/sge
+./install_qmaster -auto /data/conf/inst_template.conf
+cat <<'EOT' >> /root/.bashrc
+export SGE_ROOT=/opt/sge
 export SGE_CELL=default
 if [ -e $SGE_ROOT/$SGE_CELL ]
 then
@@ -39,7 +39,7 @@ yum install -y ${baseurl}${version}/gridengine${i}${version}-${subversion}.el6.x
 done
 export SGE_ROOT=/opt/sge
 cd $SGE_ROOT
-./install_execd -auto /data/conf/inst_node.conf
+./install_execd -nobincheck -auto /data/conf/inst_template.conf
 SCRIPT
 
 Vagrant.configure("2") do |config|
