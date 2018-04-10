@@ -5,42 +5,13 @@
 # Additional Requirements:
 # https://github.com/devopsgroup-io/vagrant-hostmanager
 
-$masterprov = <<SCRIPT
-useradd --home /opt/sge --system sgeadmin
-baseurl=http://arc.liv.ac.uk/downloads/SGE/releases/
-version=8.1.6
-subversion=1
-for i in - -qmaster- -qmon- -execd-; do
-yum install -y ${baseurl}${version}/gridengine${i}${version}-${subversion}.el6.x86_64.rpm
-done
-export SGE_ROOT=/opt/sge
-cd $SGE_ROOT
-./install_qmaster -auto /data/conf/inst_template.conf
-cat <<'EOT' >> /root/.bashrc
-export SGE_ROOT=/opt/sge
-export SGE_CELL=default
-if [ -e $SGE_ROOT/$SGE_CELL ]
-then
-. $SGE_ROOT/$SGE_CELL/common/settings.sh
-fi
-EOT
-. /root/.bashrc
-qconf -ah nodeA
-qconf -ah nodeB
-SCRIPT
-
-$nodeprov = <<SCRIPT
-useradd --home /opt/sge --system sgeadmin
-baseurl=http://arc.liv.ac.uk/downloads/SGE/releases/
-version=8.1.6
-subversion=1
-for i in - -execd-; do
-yum install -y ${baseurl}${version}/gridengine${i}${version}-${subversion}.el6.x86_64.rpm
-done
-export SGE_ROOT=/opt/sge
-cd $SGE_ROOT
-./install_execd -nobincheck -auto /data/conf/inst_template.conf
-SCRIPT
+# Configurable options!
+# The URL containing the RPMs.
+baseurl = "https://arc.liv.ac.uk/downloads/SGE/releases/"
+# The version number.
+version = "8.1.6"
+# The release number.
+release = "1"
 
 Vagrant.configure("2") do |config|
   config.vm.box = "centos/6"
@@ -84,8 +55,6 @@ Vagrant.configure("2") do |config|
     master.vm.network "private_network", ip: "192.168.2.2"
     # Define hostname.
     master.vm.hostname = "master"
-    # Provision the master node.
-    master.vm.provision "shell", inline:$masterprov
   end
   
   # Define several secondary nodes.
@@ -97,7 +66,6 @@ Vagrant.configure("2") do |config|
     nodeA.vm.synced_folder ".", "/data", type: "nfs"
     nodeA.vm.network "private_network", ip: "192.168.2.3"
     nodeA.vm.hostname = "nodeA"
-    nodeA.vm.provision "shell", inline:$nodeprov
   end
   config.vm.define "nodeB" do |nodeB|
     nodeB.vm.provider "virtualbox" do |v|
@@ -107,6 +75,14 @@ Vagrant.configure("2") do |config|
     nodeB.vm.synced_folder ".", "/data", type: "nfs"
     nodeB.vm.network "private_network", ip: "192.168.2.4"
     nodeB.vm.hostname = "nodeB"
-    nodeB.vm.provision "shell", inline:$nodeprov
+  end
+
+  # Provision master and secondary nodes.
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "site.yml"
+    ansible.groups = {
+      "masters" => ["master"],
+      "nodes" => ["nodeA","nodeB"],
+    }
   end
 end

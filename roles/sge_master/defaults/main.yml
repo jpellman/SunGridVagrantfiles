@@ -1,0 +1,9 @@
+---
+# defaults file for sge_master
+
+# The URL containing the RPMs.
+baseurl : https://arc.liv.ac.uk/downloads/SGE/releases/
+# # The version number.
+version : 8.1.6
+# # The release number.
+release : 1

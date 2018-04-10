@@ -1,0 +1,17 @@
+- name : Provision an SGE master node.
+  hosts: masters
+  remote_user: vagrant
+  become: yes
+  become_user: root
+  
+  roles:
+    - sge_master
+
+- name : Provision an SGE secondary node.
+  hosts: nodes
+  remote_user: vagrant
+  become: yes
+  become_user: root
+  
+  roles:
+    - sge_node

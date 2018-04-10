@@ -1,0 +1,24 @@
+---
+# tasks file for sge_master
+
+- name : Create the SGE administrative User
+  user:
+    name: sgeadmin
+    home: /opt/sge
+    system: yes
+
+- name: Install SGE Packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - "{{ baseurl }}/{{ version }}/gridengine-{{ version }}-{{release}}.el6.x86_64.rpm"
+    - "{{ baseurl }}/{{ version }}/gridengine-execd-{{ version }}-{{release}}.el6.x86_64.rpm"
+
+- name: Copy over the configuration template.
+  copy:
+    src: inst_template.conf
+    dest: /tmp/inst_template.conf 
+
+- name: Install secondary node host.
+  command: "/opt/sge/install_execd -nobincheck -auto /tmp/inst_template.conf"
