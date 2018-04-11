@@ -23,7 +23,9 @@
     dest: /tmp/inst_template.conf 
 
 - name: Install master host.
-  command: "/opt/sge/install_qmaster -auto /tmp/inst_template.conf"
+  shell: |
+    cd /opt/sge
+    ./install_qmaster -auto /tmp/inst_template.conf
 
 - name: Install the root bashrc
   copy:

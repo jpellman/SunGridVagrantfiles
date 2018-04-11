@@ -1,0 +1,6 @@
+---
+# tasks file for common
+#
+- name: Install libselinux-python
+  yum:
+    name: libselinux-python

@@ -5,6 +5,7 @@
   become_user: root
   
   roles:
+    - common
     - sge_master
 
 - name : Provision an SGE secondary node.
@@ -14,4 +15,5 @@
   become_user: root
   
   roles:
+    - common
     - sge_node
